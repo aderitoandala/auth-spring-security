@@ -4,15 +4,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
+import com.mz.auth.repository.UserRepository;
+//import com.mz.auth.entity.CustomUser;
 
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService{
 
+private final UserRepository userRepository;
+
+public CustomUserDetailsService(UserRepository userRepository){
+this.userRepository=userRepository;
+}
+
 @Override
 public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
-return User.builder().username(username).password("$2a$12$5yuF5LqAHM7H13sBsrdF8.VBBs56LF8lW62sMgSBoSCc91He7CI3e").build();
+return userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("User not found"));
 }
 
 }
