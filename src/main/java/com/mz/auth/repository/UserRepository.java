@@ -1,10 +1,12 @@
 package com.mz.auth.repository;
-import com.mz.auth.entity.CustomUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
+import org.springframework.security.core.userdetails.UserDetails;
+import com.mz.auth.entity.CustomUser;
 
 public interface UserRepository extends JpaRepository<CustomUser,Long>{
 
-Optional<CustomUser> findByUsername(String username);
+Optional<UserDetails> findByUsername(String username);
+boolean existsByUsername(String username);
 
 }
