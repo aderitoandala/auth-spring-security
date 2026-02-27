@@ -13,9 +13,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.mz.auth.entity.enums.UserRole;
 import java.util.List;
 import java.util.Collection;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="custom_user")
+@NoArgsConstructor
 public class CustomUser implements UserDetails{
 
 public CustomUser(String username,String password,UserRole role){
