@@ -10,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.mz.auth.entity.enums.UserRole;
 import com.mz.auth.dto.RegisterDTO;
 import com.mz.auth.security.exception.UserAlreadyExistsException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 
 @Service
@@ -28,6 +30,8 @@ public UserDetails loadUserByUsername(String username) throws UsernameNotFoundEx
 return userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("User not found"));
 }
 
+
+
 public void registerUser(RegisterDTO data){
 if(userRepository.existsByUsername(data.username())){
 throw new UserAlreadyExistsException("Registration failed");
@@ -37,5 +41,9 @@ String encriptedPassword = passwordEncoder.encode(data.password());
 CustomUser newUser = new CustomUser(data.username(),encriptedPassword,UserRole.USER);
  userRepository.save(newUser);
 }
+
+
+
+
 
 }
