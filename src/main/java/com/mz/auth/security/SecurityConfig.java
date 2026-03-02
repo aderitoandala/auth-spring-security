@@ -8,7 +8,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;	
 
 
 @Configuration
@@ -23,9 +24,10 @@ return httpSecurity
 .authorizeHttpRequests(auth->auth
 .requestMatchers(HttpMethod.GET,"/auth").authenticated()
 .requestMatchers(HttpMethod.POST,"/auth/signIn").permitAll()
+.requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
+.anyRequest().authenticated()
 )
 
-.httpBasic(Customizer.withDefaults())
 
 .build();
 
@@ -36,5 +38,9 @@ public PasswordEncoder passwordEncoder(){
 return new BCryptPasswordEncoder();
 }
 
+@Bean
+public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)throws Exception {
+return authenticationConfiguration.getAuthenticationManager();
+}
 
 }
