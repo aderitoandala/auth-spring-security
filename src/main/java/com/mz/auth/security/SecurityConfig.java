@@ -10,11 +10,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;	
-
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig{
+
+private final JwtFilter jwtFilter;
+
+public SecurityConfig(JwtFilter jwtFilter){
+this.jwtFilter=jwtFilter;
+}
 
 @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
@@ -28,7 +34,7 @@ return httpSecurity
 .anyRequest().authenticated()
 )
 
-
+.addFilterBefore(jwtFilter,UsernamePasswordAuthenticationFilter.class)
 .build();
 
 }
