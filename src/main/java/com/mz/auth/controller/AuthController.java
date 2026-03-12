@@ -12,6 +12,9 @@ import com.mz.auth.dto.RegisterDTO;
 import com.mz.auth.dto.LoginRequestDTO;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import com.mz.auth.dto.LoginResponseDTO;
+import com.mz.auth.security.TokenService;
+
 
 
 @RestController
@@ -19,12 +22,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 public class AuthController{
 
 private final CustomUserDetailsService userService;
+
 private final AuthenticationManager authenticationManager;
 
+private final TokenService tokenService;
 
-public AuthController(CustomUserDetailsService userService,AuthenticationManager authenticationManager){
+
+
+public AuthController(CustomUserDetailsService userService,AuthenticationManager authenticationManager,TokenService tokenService ){
 this.userService=userService;
 this.authenticationManager=authenticationManager;
+this.tokenService=tokenService;
 }
 
 @GetMapping
@@ -32,16 +40,18 @@ public ResponseEntity<String> startSecurity(){
 return ResponseEntity.ok("Getting start with spring security");
 }
 
-@PostMapping("/signIn")
+@PostMapping("/register")
 public ResponseEntity<Void>registerUser(@RequestBody RegisterDTO data){
 userService.registerUser(data);
 return ResponseEntity.status(HttpStatus.CREATED).build();
 }
 
 @PostMapping("/login")
-public ResponseEntity<Void>login(@RequestBody LoginRequestDTO data){
-authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(data.username(),data.password()));
-return ResponseEntity.ok().build();
+public ResponseEntity<LoginResponseDTO>login(@RequestBody LoginRequestDTO data){
+var auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(data.username(),data.password()));
+CustomUser user =(CustomUser)auth.getPrincipal();
+String token = this.tokenService.generateToken(user);
+return ResponseEntity.ok(new LoginResponseDTO(token));
 }
 
 
