@@ -11,6 +11,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;	
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
+
 
 @Configuration
 @EnableWebSecurity
@@ -33,11 +35,25 @@ return httpSecurity
 .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
 .anyRequest().authenticated()
 )
+// tratamento de excepções de segurança 
+.exceptionHandling(ex->ex
+
+// 1.AuthenticationException(usuário não auntenticado- 401) 
+.authenticationEntryPoint((request,response,authException)->
+         response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+
+// 2.AccessDeniedException(usuário autenticado, mas sem permissão - 403)
+.accessDeniedHandler((request,response,authException)->
+         response.sendError(HttpServletResponse.SC_FORBIDDEN))
+)
+
+
 
 .addFilterBefore(jwtFilter,UsernamePasswordAuthenticationFilter.class)
 .build();
-
 }
+
+
 
 @Bean
 public PasswordEncoder passwordEncoder(){
