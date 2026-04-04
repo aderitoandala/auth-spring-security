@@ -4,7 +4,7 @@ import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.mz.auth.entity.CustomUser;
 
-public interface UserRepository extends JpaRepository<CustomUser,Long>{
+public interface UserRepository extends JpaRepository<CustomUser,String>{
 
 Optional<UserDetails> findByUsername(String username);
 boolean existsByUsername(String username);
