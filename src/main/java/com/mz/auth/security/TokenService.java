@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.mz.auth.security.exception.TokenGenerationException;
 
 import java.time.Instant;
 import java.time.Duration;
@@ -36,42 +37,27 @@ return token;
 
 } catch(JWTCreationException ex){
 
-throw new RuntimeException("error while generating token",ex);
+throw new TokenGenerationException("error while generating token");
 
 }
 }
 
 
-public boolean isTokenValid(String token){
-if(token==null||token.isEmpty())return false;
-
-try{
-Algorithm algorithm = Algorithm.HMAC256(secret);
-
-JWT.require(algorithm)
-.withIssuer("auth-api")
-.build()
-.verify(token);
-
-return true;
-}catch(JWTVerificationException ex){
-return false;
-}
+public String validateToken(String token){
+    try{
+	Algorithm algorithm = Algorithm.HMAC256(secret);
+	return JWT.require(algorithm)
+		.withIssuer("auth-api")
+		.build()
+		.verify(token)
+		.getSubject();
+   }catch(JWTVerificationException ex){
+	return null;
+    }
 
 }
 
 
-public String getSubject(String token){
-if(token==null||token.isEmpty()){
-return " ";
-}
-
-return JWT.require(Algorithm.HMAC256(secret))
-.withIssuer("auth-api")
-.build()
-.verify(token)
-.getSubject();
-}
 
 
 
