@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import com.mz.auth.dto.LoginResponseDTO;
 import com.mz.auth.security.TokenService;
+import com.mz.auth.security.exception.TokenGenerationException;
 
 
 
@@ -49,8 +50,11 @@ return ResponseEntity.status(HttpStatus.CREATED).build();
 @PostMapping("/login")
 public ResponseEntity<LoginResponseDTO>login(@RequestBody LoginRequestDTO data){
 var auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(data.username(),data.password()));
-CustomUser user =(CustomUser)auth.getPrincipal();
+if(!(auth.getPrincipal() instanceof CustomUser user)){
+   throw new TokenGenerationException("Unexpected principal type");
+}
 String token = this.tokenService.generateToken(user);
+
 return ResponseEntity.ok(new LoginResponseDTO(token));
 }
 

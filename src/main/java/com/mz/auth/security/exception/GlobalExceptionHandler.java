@@ -25,10 +25,10 @@ return ResponseEntity.status(status).body(errorDetails);
 
 @ExceptionHandler(TokenGenerationException.class)
 public ResponseEntity<ApiErrorDetails> tokenGenerationHandler(TokenGenerationException ex,HttpServletRequest request ){
-log.warn("error while generate token.path:{}",request.getRequestURI(),ex);
+log.error("error while generate token.path:{}",request.getRequestURI(),ex);
 
 HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-ApiErrorDetails errorDetails= new ApiErrorDetails(status.value(),status.getReasonPhrase(),ex.getMessage(),request.getRequestURI());
+ApiErrorDetails errorDetails= new ApiErrorDetails(status.value(),status.getReasonPhrase(),"Login failed.Please try again later!",request.getRequestURI());
 return ResponseEntity.status(status).body(errorDetails);
 }
 
