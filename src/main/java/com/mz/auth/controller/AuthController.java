@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import com.mz.auth.dto.LoginResponseDTO;
 import com.mz.auth.security.TokenService;
 import com.mz.auth.security.exception.TokenGenerationException;
+import jakarta.validation.Valid;
 
 
 
@@ -42,13 +43,13 @@ return ResponseEntity.ok("Getting start with spring security");
 }
 
 @PostMapping("/register")
-public ResponseEntity<Void>registerUser(@RequestBody RegisterDTO data){
+public ResponseEntity<Void>registerUser(@RequestBody @Valid RegisterDTO data){
 userService.registerUser(data);
 return ResponseEntity.status(HttpStatus.CREATED).build();
 }
 
 @PostMapping("/login")
-public ResponseEntity<LoginResponseDTO>login(@RequestBody LoginRequestDTO data){
+public ResponseEntity<LoginResponseDTO>login(@RequestBody @Valid LoginRequestDTO data){
 var auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(data.username(),data.password()));
 if(!(auth.getPrincipal() instanceof CustomUser user)){
    throw new TokenGenerationException("Unexpected principal type");

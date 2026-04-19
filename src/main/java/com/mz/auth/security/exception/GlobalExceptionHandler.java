@@ -6,8 +6,12 @@ import org.springframework.http.HttpStatus;
 import jakarta. servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import com.mz.auth.dto.ApiErrorDetails;
+import com.mz.auth.dto.FieldsValidationErrorDetails;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestControllerAdvice
 @Slf4j
@@ -52,5 +56,23 @@ public ResponseEntity<ApiErrorDetails> badCredentialsHandler(BadCredentialsExcep
 }
 
 
+@ExceptionHandler(MethodArgumentNotValidException.class)
+public ResponseEntity<FieldsValidationErrorDetails>
+fieldsValidationHandler(MethodArgumentNotValidException ex , HttpServletRequest request){
+log.warn("field validation error in path:{}",request.getRequestURI(),ex);
+
+HttpStatus status= HttpStatus.BAD_REQUEST;
+Map<String,String> fields=new HashMap<>();
+ex.getBindingResult().getFieldErrors().forEach(field -> fields.put(field.getField(),
+field.getDefaultMessage()));
+
+return
+ResponseEntity.status(status).body(
+new FieldsValidationErrorDetails(status.value(),
+status.getReasonPhrase(),
+"One or more fields have failed validation",
+fields,
+request.getRequestURI()));
+}
 
 }
